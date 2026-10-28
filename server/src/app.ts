@@ -1,5 +1,7 @@
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
+import fs from 'fs';
 import rateLimit from 'express-rate-limit';
 import { config } from './config/env';
 import { errorHandler } from './middleware/errorHandler';
@@ -56,9 +58,21 @@ export const createApp = () => {
   app.use('/api/voice', voiceRoutes);
   app.use('/api/ai', aiRoutes);
 
-  // 404 handler for undefined routes
-  app.use((req, res) => {
-    res.status(404).json({ success: false, message: `Route not found: ${req.method} ${req.originalUrl}` });
+  // Serve frontend client build in production if present
+  const clientDistPath = path.resolve(__dirname, '../../client/dist');
+  if (fs.existsSync(clientDistPath)) {
+    app.use(express.static(clientDistPath));
+    app.get('*', (req, res, next) => {
+      if (req.path.startsWith('/api')) {
+        return next();
+      }
+      res.sendFile(path.join(clientDistPath, 'index.html'));
+    });
+  }
+
+  // 404 handler for undefined API routes
+  app.use('/api', (req, res) => {
+    res.status(404).json({ success: false, message: `API route not found: ${req.method} ${req.originalUrl}` });
   });
 
   // Central error handling middleware
