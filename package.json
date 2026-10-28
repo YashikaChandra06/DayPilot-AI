@@ -1,0 +1,16 @@
+{
+  "name": "daypilot-ai",
+  "version": "1.0.0",
+  "description": "DayPilot AI — Multilingual Personal Memory & Money Assistant",
+  "scripts": {
+    "dev": "concurrently -n \"SERVER,CLIENT\" -c \"blue,green\" \"npm run server:dev\" \"npm run client:dev\"",
+    "install:all": "npm install && cd server && npm install && cd ../client && npm install",
+    "server:dev": "cd server && npm run dev",
+    "client:dev": "cd client && npm run dev",
+    "test": "cd server && npm test",
+    "build": "cd server && npm run build && cd ../client && npm run build"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
