@@ -8,6 +8,9 @@ dotenv.config();
 
 const gnaniKey = process.env.GNANI_API_KEY || process.env.GNANI_TOKEN || '';
 const useMockExplicit = process.env.GNANI_USE_MOCK;
+const geminiKey = process.env.GEMINI_API_KEY || '';
+const llmKey = process.env.LLM_API_KEY || geminiKey;
+const llmProvider = process.env.LLM_PROVIDER || (geminiKey ? 'gemini' : 'local');
 
 export const config = {
   port: parseInt(process.env.PORT || '5000', 10),
@@ -30,11 +33,12 @@ export const config = {
     useMock: useMockExplicit === 'true' ? true : !gnaniKey,
   },
 
-  // LLM Provider Configuration
+  // LLM Provider Configuration (gemini, openai, groq, local)
   llm: {
-    provider: process.env.LLM_PROVIDER || 'local',
-    apiKey: process.env.LLM_API_KEY || '',
-    model: process.env.LLM_MODEL || 'gpt-4o-mini',
+    provider: llmProvider,
+    apiKey: llmKey,
+    geminiApiKey: geminiKey,
+    model: process.env.LLM_MODEL || (llmProvider === 'gemini' ? 'gemini-3.5-flash-lite' : 'gpt-4o-mini'),
     endpoint: process.env.LLM_ENDPOINT || '',
   },
 };

@@ -111,7 +111,7 @@ describe('DayPilot AI Backend API Test Suite', () => {
     const { extraction } = res.body;
     expect(extraction.transactions.length).toBeGreaterThanOrEqual(1);
     expect(extraction.tasks.length).toBeGreaterThanOrEqual(1);
-  });
+  }, 15000);
 
   it('POST /api/capture/confirm commits parsed items to DB and increments streak', async () => {
     const confirmPayload = {

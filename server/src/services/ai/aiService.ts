@@ -281,7 +281,7 @@ export class AIService {
   }
 
   /**
-   * External LLM extractor (OpenAI / Groq / Gemini compatible)
+   * External LLM extractor (Google Gemini / OpenAI / Groq compatible)
    */
   private static async extractWithLLM(
     text: string,
@@ -303,6 +303,58 @@ Return strict JSON matching this schema:
 }
 Note: Do not mark planned future expenses (e.g., "might spend ₹500 tomorrow") as confirmed transactions. Keep monetary values accurate. User timezone: ${userTimezone}.`;
 
+    // 1. Google Gemini Provider
+    if (config.llm.provider === 'gemini' || config.llm.geminiApiKey) {
+      const apiKey = config.llm.geminiApiKey || config.llm.apiKey;
+      const candidateModels = [
+        config.llm.model,
+        'gemini-3.5-flash-lite',
+        'gemini-flash-latest',
+      ].filter(Boolean);
+
+      for (const model of candidateModels) {
+        try {
+          // Primary: Native Gemini REST endpoint with structured JSON output
+          const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+          const geminiRes = await fetch(geminiUrl, {
+            method: 'POST',
+            signal: AbortSignal.timeout(5000),
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              system_instruction: {
+                parts: [{ text: systemPrompt }],
+              },
+              contents: [
+                {
+                  parts: [{ text }],
+                },
+              ],
+              generationConfig: {
+                responseMimeType: 'application/json',
+                temperature: 0.2,
+              },
+            }),
+          });
+
+          if (geminiRes.ok) {
+            const geminiData = await geminiRes.json();
+            const textContent = geminiData.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (textContent) {
+              return JSON.parse(textContent);
+            }
+          } else {
+            const errTxt = await geminiRes.text();
+            console.warn(`[AIService] Gemini model ${model} returned HTTP ${geminiRes.status}: ${errTxt}`);
+          }
+        } catch (modelErr) {
+          console.warn(`[AIService] Gemini model ${model} error:`, modelErr);
+        }
+      }
+
+      throw new Error('All Gemini candidate models failed or returned non-200');
+    }
+
+    // 2. OpenAI / Groq / Other compatible providers
     const endpoint = config.llm.endpoint || 'https://api.openai.com/v1/chat/completions';
 
     const res = await fetch(endpoint, {
