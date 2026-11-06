@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { Settings, Globe, DollarSign, Bell, Clock, Check, Sparkles } from 'lucide-react';
+import { Settings, Globe, DollarSign, Bell, Clock, Check, Sparkles, Send } from 'lucide-react';
+import { notificationService } from '../../services/notificationService';
 
 const LANGUAGES = [
   { code: 'en-IN', name: 'English (India)' },
@@ -36,6 +37,20 @@ export const SettingsView: React.FC = () => {
   );
   const [isSaving, setIsSaving] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
+  const [notificationStatus, setNotificationStatus] = useState<string | null>(null);
+
+  const handleTestNotification = async () => {
+    const granted = await notificationService.requestPermission();
+    if (granted) {
+      notificationService.sendNotification('🎉 DayPilot AI Notifications Active!', {
+        body: 'You are all set to receive task reminders, streak milestones, and morning briefings.',
+      });
+      setNotificationStatus('Test notification sent! Check your device notifications.');
+    } else {
+      setNotificationStatus('Notification permission was blocked or denied in your browser settings.');
+    }
+    setTimeout(() => setNotificationStatus(null), 5000);
+  };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -186,6 +201,27 @@ export const SettingsView: React.FC = () => {
                 className="w-4 h-4 accent-primary-600 rounded"
               />
             </label>
+
+            {/* Test Notification Action */}
+            <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-t border-border">
+              <span className="text-[11px] text-muted-foreground">
+                Test web push notifications on this browser or mobile device:
+              </span>
+              <button
+                type="button"
+                onClick={handleTestNotification}
+                className="flex items-center space-x-1 px-3 py-1.5 rounded-lg border border-border bg-muted/60 hover:bg-muted text-xs font-semibold text-foreground transition-colors self-start sm:self-auto"
+              >
+                <Bell className="w-3.5 h-3.5 text-indigo-500" />
+                <span>Test Notification</span>
+              </button>
+            </div>
+
+            {notificationStatus && (
+              <p className="text-[11px] text-primary-600 dark:text-primary-400 font-medium">
+                {notificationStatus}
+              </p>
+            )}
           </div>
         </div>
 

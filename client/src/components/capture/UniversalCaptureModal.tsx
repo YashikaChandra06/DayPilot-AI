@@ -15,6 +15,8 @@ import {
   Edit2,
   Trash2,
   AlertCircle,
+  UploadCloud,
+  FileAudio,
 } from 'lucide-react';
 
 interface UniversalCaptureModalProps {
@@ -33,11 +35,39 @@ export const UniversalCaptureModal: React.FC<UniversalCaptureModalProps> = ({
   const [isRecording, setIsRecording] = useState(false);
   const [recordingSeconds, setRecordingSeconds] = useState(0);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isUploadingAudio, setIsUploadingAudio] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [extraction, setExtraction] = useState<ExtractionResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [savedSuccess, setSavedSuccess] = useState(false);
   const timerRef = useRef<any>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleAudioFileUpload = async (file: File) => {
+    if (!file) return;
+    setIsUploadingAudio(true);
+    setError(null);
+    try {
+      const res = await api.transcribeAudio(file, activeLanguage || 'en-IN');
+      if (res.transcript) {
+        setInputText(res.transcript);
+        setIsAnalyzing(true);
+        const analysis = await api.captureText(
+          res.transcript,
+          'voice',
+          res.detectedLanguage || activeLanguage
+        );
+        setExtraction(analysis.extraction);
+      } else {
+        setError('No speech recognized in this audio file. Please check file clarity.');
+      }
+    } catch (err: any) {
+      setError(err.message || 'Audio upload transcription failed');
+    } finally {
+      setIsUploadingAudio(false);
+      setIsAnalyzing(false);
+    }
+  };
 
   useEffect(() => {
     if (!isOpen) {
@@ -237,20 +267,48 @@ export const UniversalCaptureModal: React.FC<UniversalCaptureModalProps> = ({
                   )}
                 </div>
 
+                {/* Hidden Audio File Input */}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="audio/*,.mp3,.wav,.m4a,.ogg,.webm"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleAudioFileUpload(file);
+                  }}
+                />
+
                 {/* Controls Bar */}
-                <div className="flex items-center justify-between">
-                  <button
-                    type="button"
-                    onClick={toggleRecording}
-                    className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
-                      isRecording
-                        ? 'bg-red-500 text-white animate-pulse'
-                        : 'bg-muted hover:bg-muted/80 text-foreground border border-border'
-                    }`}
-                  >
-                    {isRecording ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4 text-primary-500" />}
-                    <span>{isRecording ? 'Stop Recording' : 'Voice Record'}</span>
-                  </button>
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex items-center space-x-2">
+                    <button
+                      type="button"
+                      onClick={toggleRecording}
+                      className={`flex items-center space-x-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all ${
+                        isRecording
+                          ? 'bg-red-500 text-white animate-pulse'
+                          : 'bg-muted hover:bg-muted/80 text-foreground border border-border'
+                      }`}
+                    >
+                      {isRecording ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4 text-primary-500" />}
+                      <span>{isRecording ? 'Stop Recording' : 'Voice Record'}</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      disabled={isUploadingAudio || isRecording}
+                      onClick={() => fileInputRef.current?.click()}
+                      className="flex items-center space-x-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-muted hover:bg-muted/80 text-foreground border border-border disabled:opacity-50 transition-all"
+                    >
+                      {isUploadingAudio ? (
+                        <div className="w-3.5 h-3.5 border-2 border-primary-500 border-t-transparent rounded-full animate-spin" />
+                      ) : (
+                        <UploadCloud className="w-4 h-4 text-primary-500" />
+                      )}
+                      <span>{isUploadingAudio ? 'Transcribing...' : 'Upload Audio'}</span>
+                    </button>
+                  </div>
 
                   <button
                     type="button"

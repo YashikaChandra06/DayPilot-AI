@@ -7,29 +7,40 @@ DayPilot AI is a personal AI assistant that turns voice and text inputs into org
 ## 🌟 Key Features
 
 1. **🎙️ Multilingual Universal Voice & Text Capture**
-   - Natural speech and text input supported across **9 Indian languages & dialects**: English (India), Hinglish, हिन्दी (Hindi), தமிழ் (Tamil), తెలుగు (Telugu), ಕನ್ನಡ (Kannada), বাংলা (Bengali), मराठी (Marathi), and ગુજરાતી (Gujarati).
+   - Natural speech, text input, and audio file uploads (`.mp3`, `.wav`, `.m4a`, `.webm`) supported across **9 Indian languages & dialects**: English (India), Hinglish, हिन्दी (Hindi), தமிழ் (Tamil), తెలుగు (Telugu), ಕನ್ನಡ (Kannada), বাংলা (Bengali), मराठी (Marathi), and ગુજરાતી (Gujarati).
    - Powered by Gnani AI voice recognition with built-in resilient offline/mock adapters.
-   - Dual-engine parsing: external LLM (OpenAI / Groq / Gemini) or fast deterministic local regex/NLP extractor.
+   - Dual-engine parsing: external LLM (**Google Gemini 3.5 Flash** / OpenAI / Groq) or fast deterministic local regex/NLP extractor.
 
 2. **📝 Notes & 3-Level Summarization**
    - Stores raw transcripts alongside structured notes.
    - Generates multi-level summaries on demand: **Quick Brief**, **Standard Summary**, and **Detailed Analysis**.
    - Automatically extracts action items and suggested categorical tags.
+   - One-click export to Markdown files.
 
 3. **✅ Task Pilot**
    - Smart priority assignments (`urgent`, `high`, `medium`, `low`) and deadline tracking.
    - Completing tasks automatically logs qualifying activity in the streak engine.
+   - Export tasks to CSV.
 
-4. **💰 Money & Budget Tracker**
+4. **💰 Money, Budget & Subscription Tracker**
    - Extracts transactions from conversational speech (*e.g., "Spent 180 on lunch and 60 on metro"*).
    - Real-time monthly budget alerts, category breakdowns, and 7-day spending trend charts via Recharts.
+   - **Recurring Bills & Subscription Tracker**: Track monthly commitments (Netflix, WiFi, Rent, Gym) and fixed burn rate.
+   - One-click export of transactions to CSV.
 
-5. **🔥 Streak & Habit Engine**
+5. **🔍 Global Spotlight Search (`Ctrl + K` / `Cmd + K`)**
+   - Unified instant search across all notes, tasks, and spending records with keyboard shortcuts.
+
+6. **📱 Progressive Web App (PWA) & Web Notifications**
+   - Installable on mobile (Android/iOS) and desktop with standalone mode and offline service worker caching.
+   - Web push notification support for daily morning briefings and scheduled task alerts.
+
+7. **🔥 Streak & Habit Engine**
    - Authoritative streak ledger based on calendar dates in the user's local timezone.
    - 35-day activity heatmap (similar to contribution graphs).
    - Milestone badges: Spark (3d), Flame (7d), Blaze (14d), Master (30d), and Titan (100d).
 
-6. **🤖 Grounded Multilingual Assistant Q&A**
+8. **🤖 Grounded Multilingual Assistant Q&A**
    - Chat with DayPilot about your notes, spending, or tasks.
    - Strict grounding in your personal library with clickable source citations.
 

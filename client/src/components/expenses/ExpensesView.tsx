@@ -14,7 +14,10 @@ import {
   Check,
   X,
   Mic,
+  Download,
+  Repeat,
 } from 'lucide-react';
+import { exportTransactionsToCSV } from '../../services/exportService';
 import {
   ResponsiveContainer,
   PieChart,
@@ -60,6 +63,49 @@ export const ExpensesView: React.FC<ExpensesViewProps> = ({
   const [budgetCategory, setBudgetCategory] = useState('Overall');
   const [budgetAmount, setBudgetAmount] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Recurring Subscriptions
+  const [subscriptions, setSubscriptions] = useState<Array<{ id: string; name: string; amount: number; category: string; billingDay: number }>>(() => {
+    try {
+      const saved = localStorage.getItem('daypilot_subscriptions');
+      return saved ? JSON.parse(saved) : [
+        { id: '1', name: 'Netflix Subscription', amount: 499, category: 'Entertainment', billingDay: 15 },
+        { id: '2', name: 'Broadband / WiFi', amount: 999, category: 'Bills', billingDay: 1 },
+      ];
+    } catch {
+      return [];
+    }
+  });
+  const [isSubModalOpen, setIsSubModalOpen] = useState(false);
+  const [subName, setSubName] = useState('');
+  const [subAmount, setSubAmount] = useState('');
+  const [subCategory, setSubCategory] = useState('Bills');
+  const [subDay, setSubDay] = useState('1');
+
+  const saveSubscriptions = (subs: typeof subscriptions) => {
+    setSubscriptions(subs);
+    localStorage.setItem('daypilot_subscriptions', JSON.stringify(subs));
+  };
+
+  const handleAddSubscription = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!subName || !subAmount) return;
+    const newSub = {
+      id: Date.now().toString(),
+      name: subName,
+      amount: parseFloat(subAmount) || 0,
+      category: subCategory,
+      billingDay: parseInt(subDay, 10) || 1,
+    };
+    saveSubscriptions([...subscriptions, newSub]);
+    setSubName('');
+    setSubAmount('');
+    setIsSubModalOpen(false);
+  };
+
+  const handleDeleteSubscription = (id: string) => {
+    saveSubscriptions(subscriptions.filter((s) => s.id !== id));
+  };
 
   useEffect(() => {
     loadExpenseData();
@@ -161,7 +207,16 @@ export const ExpensesView: React.FC<ExpensesViewProps> = ({
           </p>
         </div>
 
-        <div className="flex items-center space-x-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={() => exportTransactionsToCSV(transactions, user?.currency || 'INR')}
+            disabled={transactions.length === 0}
+            className="flex items-center space-x-1 px-3 py-2 rounded-xl border border-border bg-card hover:bg-muted text-xs font-semibold text-foreground disabled:opacity-50 transition-colors"
+            title="Download your expenses as a CSV spreadsheet"
+          >
+            <Download className="w-3.5 h-3.5 text-primary-500" />
+            <span>Export CSV</span>
+          </button>
           <button
             onClick={() => setIsBudgetModalOpen(true)}
             className="px-3.5 py-2 rounded-xl border border-border bg-card hover:bg-muted text-xs font-semibold text-foreground transition-colors"
@@ -382,6 +437,62 @@ export const ExpensesView: React.FC<ExpensesViewProps> = ({
         )}
       </div>
 
+      {/* Recurring Subscriptions & Fixed Monthly Commitments */}
+      <div className="p-6 rounded-2xl border border-border bg-card space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <div className="flex items-center space-x-2">
+              <Repeat className="w-4 h-4 text-primary-500" />
+              <h2 className="font-semibold text-foreground text-sm">Recurring Bills & Subscriptions</h2>
+            </div>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Fixed commitments: {user?.currency || 'INR'}{' '}
+              {subscriptions.reduce((acc, s) => acc + s.amount, 0).toLocaleString()} / month
+            </p>
+          </div>
+          <button
+            onClick={() => setIsSubModalOpen(true)}
+            className="flex items-center space-x-1 self-start sm:self-auto px-3 py-1.5 rounded-lg border border-border bg-muted/60 hover:bg-muted text-xs font-semibold text-foreground transition-colors"
+          >
+            <Plus className="w-3.5 h-3.5 text-primary-500" />
+            <span>Add Subscription</span>
+          </button>
+        </div>
+
+        {subscriptions.length === 0 ? (
+          <div className="p-6 text-center text-xs text-muted-foreground border border-dashed border-border rounded-xl">
+            No recurring bills added yet. Track Netflix, Rent, Broadband, and gym memberships automatically.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {subscriptions.map((sub) => (
+              <div
+                key={sub.id}
+                className="p-3.5 rounded-xl border border-border bg-background/60 hover:bg-muted/40 transition-colors flex items-center justify-between"
+              >
+                <div>
+                  <p className="text-xs font-semibold text-foreground">{sub.name}</p>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">
+                    Renews on day {sub.billingDay} • {sub.category}
+                  </p>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-xs font-bold text-foreground">
+                    {user?.currency || 'INR'} {sub.amount.toLocaleString()}
+                  </span>
+                  <button
+                    onClick={() => handleDeleteSubscription(sub.id)}
+                    className="p-1 rounded text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* Add Transaction Modal */}
       {isAddModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-md animate-in fade-in duration-200">
@@ -551,6 +662,94 @@ export const ExpensesView: React.FC<ExpensesViewProps> = ({
                   className="px-5 py-2 rounded-xl bg-primary-600 hover:bg-primary-500 text-white font-semibold shadow-sm transition-colors"
                 >
                   {isSubmitting ? 'Saving...' : 'Set Budget'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      {/* Add Subscription Modal */}
+      {isSubModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="relative w-full max-w-md bg-card border border-border rounded-2xl shadow-2xl p-6 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-border">
+              <h2 className="font-bold text-foreground text-sm">Add Recurring Bill or Subscription</h2>
+              <button
+                onClick={() => setIsSubModalOpen(false)}
+                className="p-1 rounded text-muted-foreground hover:text-foreground"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleAddSubscription} className="space-y-3 text-xs">
+              <div>
+                <label className="font-semibold text-foreground">Service Name / Bill</label>
+                <input
+                  type="text"
+                  required
+                  value={subName}
+                  onChange={(e) => setSubName(e.target.value)}
+                  placeholder="e.g. Netflix, Gym, Flat Rent, Broadband"
+                  className="w-full mt-1 p-2.5 rounded-xl border border-input bg-background text-foreground text-xs focus:ring-2 focus:ring-primary-500/30 outline-none"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="font-semibold text-foreground">Amount ({user?.currency || 'INR'})</label>
+                  <input
+                    type="number"
+                    required
+                    step="1"
+                    value={subAmount}
+                    onChange={(e) => setSubAmount(e.target.value)}
+                    placeholder="499"
+                    className="w-full mt-1 p-2.5 rounded-xl border border-input bg-background text-foreground text-xs focus:ring-2 focus:ring-primary-500/30 outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="font-semibold text-foreground">Day of Month</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="31"
+                    required
+                    value={subDay}
+                    onChange={(e) => setSubDay(e.target.value)}
+                    className="w-full mt-1 p-2.5 rounded-xl border border-input bg-background text-foreground text-xs focus:ring-2 focus:ring-primary-500/30 outline-none"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="font-semibold text-foreground">Category</label>
+                <select
+                  value={subCategory}
+                  onChange={(e) => setSubCategory(e.target.value)}
+                  className="w-full mt-1 p-2.5 rounded-xl border border-input bg-background text-foreground text-xs focus:ring-2 focus:ring-primary-500/30 outline-none"
+                >
+                  {CATEGORIES.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex items-center justify-end space-x-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsSubModalOpen(false)}
+                  className="px-4 py-2 rounded-xl font-semibold text-muted-foreground hover:bg-muted"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-xl bg-primary-600 hover:bg-primary-500 text-white font-semibold shadow-sm transition-colors"
+                >
+                  Save Subscription
                 </button>
               </div>
             </form>

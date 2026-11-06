@@ -1,0 +1,35 @@
+{
+  "name": "DayPilot AI — Personal Memory & Money Assistant",
+  "short_name": "DayPilot AI",
+  "description": "Multilingual AI assistant that turns voice & text into organized notes, summaries, tasks, and expense tracking.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#6366f1",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/pwa-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Capture Voice Note",
+      "short_name": "Capture",
+      "description": "Quickly record a voice note or expense",
+      "url": "/?action=capture",
+      "icons": [{ "src": "/pwa-icon.svg", "sizes": "any" }]
+    },
+    {
+      "name": "Daily Briefing",
+      "short_name": "Briefing",
+      "description": "Listen to your daily AI briefing",
+      "url": "/?tab=dashboard",
+      "icons": [{ "src": "/pwa-icon.svg", "sizes": "any" }]
+    }
+  ]
+}
+

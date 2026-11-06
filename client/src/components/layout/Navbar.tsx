@@ -10,10 +10,12 @@ import {
   Sparkles,
   LogOut,
   ChevronDown,
+  Search,
 } from 'lucide-react';
 
 interface NavbarProps {
   onOpenCapture: () => void;
+  onOpenSearch?: () => void;
   streakCount?: number;
 }
 
@@ -29,7 +31,7 @@ const LANGUAGES = [
   { code: 'gu-IN', name: 'ગુજરાતી (Gujarati)', flag: '🇮🇳' },
 ];
 
-export const Navbar: React.FC<NavbarProps> = ({ onOpenCapture, streakCount = 1 }) => {
+export const Navbar: React.FC<NavbarProps> = ({ onOpenCapture, onOpenSearch, streakCount = 1 }) => {
   const { user, logout, activeLanguage, setActiveLanguage } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
@@ -70,6 +72,17 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCapture, streakCount = 1 }
             <Flame className="w-4 h-4 text-orange-500 animate-pulse fill-orange-500" />
             <span>{streakCount} {streakCount === 1 ? 'Day' : 'Days'}</span>
           </div>
+
+          {/* Global Spotlight Search Trigger */}
+          <button
+            onClick={onOpenSearch}
+            className="flex items-center space-x-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl border border-border bg-card hover:bg-muted text-muted-foreground hover:text-foreground text-xs font-medium transition-colors"
+            title="Search notes, tasks, expenses (Ctrl+K)"
+          >
+            <Search className="w-3.5 h-3.5 text-primary-500" />
+            <span className="hidden md:inline">Search</span>
+            <kbd className="hidden lg:inline text-[10px] px-1.5 py-0.5 rounded bg-muted border border-border font-mono">Ctrl K</kbd>
+          </button>
 
           {/* Quick Voice / Text Capture CTA */}
           <button

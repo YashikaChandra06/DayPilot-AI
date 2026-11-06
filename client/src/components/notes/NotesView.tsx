@@ -13,7 +13,9 @@ import {
   FileText,
   X,
   Volume2,
+  Download,
 } from 'lucide-react';
+import { exportNotesToMarkdown } from '../../services/exportService';
 
 interface NotesViewProps {
   onRefreshTrigger?: number;
@@ -128,6 +130,16 @@ export const NotesView: React.FC<NotesViewProps> = ({ onRefreshTrigger = 0 }) =>
               className="w-full pl-9 pr-3 py-2 rounded-xl border border-input bg-card text-foreground text-xs focus:outline-none focus:ring-2 focus:ring-primary-500/30 transition-all"
             />
           </div>
+
+          <button
+            onClick={() => exportNotesToMarkdown(notes)}
+            disabled={notes.length === 0}
+            className="flex items-center space-x-1 px-3 py-2 rounded-xl border border-border bg-card hover:bg-muted text-xs font-semibold text-foreground disabled:opacity-50 transition-colors shrink-0"
+            title="Export all notes to Markdown"
+          >
+            <Download className="w-3.5 h-3.5 text-primary-500" />
+            <span className="hidden sm:inline">Export</span>
+          </button>
 
           <button
             onClick={() => setIsCreateModalOpen(true)}

@@ -10,6 +10,7 @@ import { StreakView } from './components/streak/StreakView';
 import { AssistantView } from './components/assistant/AssistantView';
 import { SettingsView } from './components/settings/SettingsView';
 import { UniversalCaptureModal } from './components/capture/UniversalCaptureModal';
+import { SpotlightSearchModal } from './components/search/SpotlightSearchModal';
 import { AuthModal } from './components/auth/AuthModal';
 import { api } from './services/api';
 
@@ -17,9 +18,21 @@ export const AppContent: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
   const [isCaptureOpen, setIsCaptureOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [streakCount, setStreakCount] = useState(1);
   const [pendingTasksCount, setPendingTasksCount] = useState(0);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setIsSearchOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -67,6 +80,7 @@ export const AppContent: React.FC = () => {
       {/* Top Navigation */}
       <Navbar
         onOpenCapture={() => setIsCaptureOpen(true)}
+        onOpenSearch={() => setIsSearchOpen(true)}
         streakCount={streakCount}
       />
 
@@ -123,6 +137,13 @@ export const AppContent: React.FC = () => {
         isOpen={isCaptureOpen}
         onClose={() => setIsCaptureOpen(false)}
         onSuccess={handleCaptureSuccess}
+      />
+
+      {/* Global Spotlight Search Modal */}
+      <SpotlightSearchModal
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
+        onNavigateTab={(tab) => setActiveTab(tab)}
       />
     </div>
   );

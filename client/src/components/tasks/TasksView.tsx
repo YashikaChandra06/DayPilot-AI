@@ -12,7 +12,9 @@ import {
   Check,
   AlertCircle,
   Flame,
+  Download,
 } from 'lucide-react';
+import { exportTasksToCSV } from '../../services/exportService';
 
 interface TasksViewProps {
   onRefreshTrigger?: number;
@@ -185,20 +187,31 @@ export const TasksView: React.FC<TasksViewProps> = ({
           ))}
         </div>
 
-        {/* Priority Filter */}
+        {/* Actions & Priority Filter */}
         <div className="flex items-center space-x-2 text-xs">
-          <Filter className="w-3.5 h-3.5 text-muted-foreground" />
-          <select
-            value={priorityFilter}
-            onChange={(e) => setPriorityFilter(e.target.value)}
-            className="px-2.5 py-1 rounded-lg border border-border bg-card text-foreground text-xs outline-none cursor-pointer"
+          <button
+            onClick={() => exportTasksToCSV(tasks)}
+            disabled={tasks.length === 0}
+            className="flex items-center space-x-1 px-2.5 py-1 rounded-lg border border-border bg-card hover:bg-muted text-xs font-semibold text-foreground disabled:opacity-50 transition-colors"
+            title="Export tasks to CSV"
           >
-            <option value="all">All Priorities</option>
-            <option value="urgent">Urgent</option>
-            <option value="high">High</option>
-            <option value="medium">Medium</option>
-            <option value="low">Low</option>
-          </select>
+            <Download className="w-3.5 h-3.5 text-primary-500" />
+            <span className="hidden sm:inline">Export</span>
+          </button>
+          <div className="flex items-center space-x-1 border border-border rounded-lg px-2 py-1 bg-card">
+            <Filter className="w-3.5 h-3.5 text-muted-foreground" />
+            <select
+              value={priorityFilter}
+              onChange={(e) => setPriorityFilter(e.target.value)}
+              className="bg-transparent text-foreground text-xs outline-none cursor-pointer"
+            >
+              <option value="all">All Priorities</option>
+              <option value="urgent">Urgent</option>
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
+            </select>
+          </div>
         </div>
       </div>
 
