@@ -495,7 +495,7 @@ export const ExpensesView: React.FC<ExpensesViewProps> = ({
 
       {/* Add Transaction Modal */}
       {isAddModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-md animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 dark:bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="relative w-full max-w-md bg-card border border-border rounded-2xl shadow-2xl p-6 space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-border">
               <h2 className="font-bold text-foreground text-sm">Add Transaction</h2>
@@ -606,7 +606,7 @@ export const ExpensesView: React.FC<ExpensesViewProps> = ({
 
       {/* Set Budget Modal */}
       {isBudgetModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-md animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 dark:bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="relative w-full max-w-md bg-card border border-border rounded-2xl shadow-2xl p-6 space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-border">
               <h2 className="font-bold text-foreground text-sm">Set Monthly Budget</h2>
@@ -670,7 +670,7 @@ export const ExpensesView: React.FC<ExpensesViewProps> = ({
       )}
       {/* Add Subscription Modal */}
       {isSubModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-md animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 dark:bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="relative w-full max-w-md bg-card border border-border rounded-2xl shadow-2xl p-6 space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-border">
               <h2 className="font-bold text-foreground text-sm">Add Recurring Bill or Subscription</h2>

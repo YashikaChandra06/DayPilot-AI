@@ -4,33 +4,33 @@
 
 @layer base {
   :root {
-    --background: 40 20% 98%; /* warm off-white #FAF9F6 */
-    --foreground: 220 15% 14%; /* dark charcoal #1F2328 */
+    --background: 210 20% 98%; /* crisp clean #F8FAFC */
+    --foreground: 222 47% 11%; /* rich #0F172A */
 
     --card: 0 0% 100%;
-    --card-foreground: 220 15% 14%;
+    --card-foreground: 222 47% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 15% 14%;
+    --popover-foreground: 222 47% 11%;
 
-    --primary: 258 75% 62%; /* soft violet #7C5CEE */
+    --primary: 258 75% 58%; /* vibrant violet */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 250 20% 95%;
-    --secondary-foreground: 258 60% 35%;
+    --secondary: 240 15% 95%;
+    --secondary-foreground: 258 60% 28%;
 
-    --muted: 220 14% 94%;
-    --muted-foreground: 220 10% 46%;
+    --muted: 214 20% 93%; /* distinct, visible muted background */
+    --muted-foreground: 215 16% 36%; /* high-contrast visible slate #475569 */
 
     --accent: 255 45% 94%;
-    --accent-foreground: 258 70% 40%;
+    --accent-foreground: 258 70% 30%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 220 13% 90%;
-    --input: 220 13% 90%;
-    --ring: 258 75% 62%;
+    --border: 216 18% 82%; /* clear, crisp visible border #CAD1DC */
+    --input: 216 18% 76%; /* clear visible input outline */
+    --ring: 258 75% 58%;
 
     --radius: 0.75rem;
   }
@@ -64,6 +64,26 @@
     --input: 224 15% 20%;
     --ring: 258 85% 68%;
   }
+}
+
+/* Light mode card clarity and subtle elevation */
+html:not(.dark) .bg-card {
+  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.05), 0 1px 2px -1px rgba(15, 23, 42, 0.05);
+}
+
+/* Crisp form field readability in light mode */
+input, textarea, select {
+  border-color: hsl(var(--input));
+}
+
+select, option {
+  background-color: hsl(var(--card));
+  color: hsl(var(--foreground));
+}
+
+input::placeholder, textarea::placeholder {
+  color: hsl(var(--muted-foreground));
+  opacity: 0.85;
 }
 
 body {

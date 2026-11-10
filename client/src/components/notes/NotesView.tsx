@@ -225,7 +225,7 @@ export const NotesView: React.FC<NotesViewProps> = ({ onRefreshTrigger = 0 }) =>
 
       {/* Note Detail Modal with 3-Level AI Summary */}
       {selectedNote && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-md animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 dark:bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="relative w-full max-w-2xl bg-card border border-border rounded-2xl shadow-2xl overflow-hidden max-h-[85vh] flex flex-col">
             <div className="p-6 border-b border-border flex items-start justify-between bg-muted/40">
               <div className="space-y-1">
@@ -342,7 +342,7 @@ export const NotesView: React.FC<NotesViewProps> = ({ onRefreshTrigger = 0 }) =>
 
       {/* Create New Note Modal */}
       {isCreateModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-md animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 dark:bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="relative w-full max-w-lg bg-card border border-border rounded-2xl shadow-2xl p-6 space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-border">
               <h2 className="font-bold text-foreground text-sm">Create New Note</h2>
