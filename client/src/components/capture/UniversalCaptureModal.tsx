@@ -37,6 +37,7 @@ export const UniversalCaptureModal: React.FC<UniversalCaptureModalProps> = ({
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isUploadingAudio, setIsUploadingAudio] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [selectedEngine, setSelectedEngine] = useState<'gemini' | 'local'>('gemini');
   const [extraction, setExtraction] = useState<ExtractionResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [savedSuccess, setSavedSuccess] = useState(false);
@@ -136,7 +137,12 @@ export const UniversalCaptureModal: React.FC<UniversalCaptureModalProps> = ({
     setError(null);
     setIsAnalyzing(true);
     try {
-      const res = await api.captureText(inputText, isRecording ? 'voice' : 'text', activeLanguage);
+      const res = await api.captureText(
+        inputText,
+        isRecording ? 'voice' : 'text',
+        activeLanguage,
+        selectedEngine
+      );
       setExtraction(res.extraction);
     } catch (err: any) {
       setError(err.message || 'Failed to process capture');
@@ -208,12 +214,43 @@ export const UniversalCaptureModal: React.FC<UniversalCaptureModalProps> = ({
               </p>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
+
+          <div className="flex items-center space-x-2">
+            {/* AI Engine Mode Toggle */}
+            <div className="flex items-center p-1 bg-muted/80 rounded-xl border border-border text-[11px] font-semibold">
+              <button
+                type="button"
+                onClick={() => setSelectedEngine('gemini')}
+                className={`px-2.5 py-1 rounded-lg transition-all flex items-center space-x-1 ${
+                  selectedEngine === 'gemini'
+                    ? 'bg-primary-600 text-white shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+                title="Use Google Gemini 3.5 Flash for deep contextual extraction"
+              >
+                <span>⚡ Gemini</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedEngine('local')}
+                className={`px-2.5 py-1 rounded-lg transition-all flex items-center space-x-1 ${
+                  selectedEngine === 'local'
+                    ? 'bg-primary-600 text-white shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+                title="Use instant local deterministic NLP engine (offline / 0ms latency)"
+              >
+                <span>🚀 Local</span>
+              </button>
+            </div>
+
+            <button
+              onClick={onClose}
+              className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Modal Body */}

@@ -66,11 +66,16 @@ export const api = {
   },
 
   // Universal Capture
-  async captureText(text: string, source: 'voice' | 'text' = 'text', language?: string): Promise<{ success: boolean; extraction: ExtractionResult }> {
+  async captureText(
+    text: string,
+    source: 'voice' | 'text' = 'text',
+    language?: string,
+    engine?: 'gemini' | 'local'
+  ): Promise<{ success: boolean; extraction: ExtractionResult }> {
     const res = await fetch(`${API_BASE}/capture`, {
       method: 'POST',
       headers: getAuthHeaders(),
-      body: JSON.stringify({ text, source, language }),
+      body: JSON.stringify({ text, source, language, engine }),
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || 'Capture parsing failed');

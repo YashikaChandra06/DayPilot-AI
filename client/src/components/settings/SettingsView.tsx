@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { Settings, Globe, DollarSign, Bell, Clock, Check, Sparkles, Send } from 'lucide-react';
+import { Settings, Globe, DollarSign, Bell, Clock, Check, Sparkles, Send, Cpu, Mic } from 'lucide-react';
 import { notificationService } from '../../services/notificationService';
 
 const LANGUAGES = [
@@ -35,6 +35,12 @@ export const SettingsView: React.FC = () => {
   const [dailyBriefing, setDailyBriefing] = useState(
     user?.notificationPreferences?.dailyBriefing ?? true
   );
+  const [aiEngine, setAiEngine] = useState<'gemini' | 'local'>(() => {
+    return (localStorage.getItem('daypilot_default_engine') as 'gemini' | 'local') || 'gemini';
+  });
+  const [useVoiceMock, setUseVoiceMock] = useState<boolean>(() => {
+    return localStorage.getItem('daypilot_voice_mock') === 'true';
+  });
   const [isSaving, setIsSaving] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [notificationStatus, setNotificationStatus] = useState<string | null>(null);
@@ -67,6 +73,8 @@ export const SettingsView: React.FC = () => {
         },
       });
       setActiveLanguage(voiceLang);
+      localStorage.setItem('daypilot_default_engine', aiEngine);
+      localStorage.setItem('daypilot_voice_mock', useVoiceMock ? 'true' : 'false');
       setSavedSuccess(true);
       setTimeout(() => setSavedSuccess(false), 3000);
     } catch (err) {
@@ -160,6 +168,86 @@ export const SettingsView: React.FC = () => {
                   </option>
                 ))}
               </select>
+            </div>
+          </div>
+        </div>
+
+        {/* AI Engine & Voice Provider Toggles */}
+        <div className="p-6 rounded-2xl border border-border bg-card space-y-4">
+          <div className="flex items-center space-x-2">
+            <Cpu className="w-4 h-4 text-primary-500" />
+            <h2 className="font-semibold text-foreground text-sm">AI Engine & Voice Provider</h2>
+          </div>
+
+          <div className="space-y-3 text-xs">
+            {/* LLM Engine Toggle */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-xl border border-border bg-background gap-3">
+              <div>
+                <span className="font-semibold text-foreground">AI Extraction Engine</span>
+                <p className="text-[11px] text-muted-foreground mt-0.5">
+                  Toggle between Google Gemini 3.5 Flash cloud intelligence and instant offline regex parsing
+                </p>
+              </div>
+              <div className="flex items-center p-1 bg-muted rounded-xl border border-border shrink-0 self-start sm:self-auto">
+                <button
+                  type="button"
+                  onClick={() => setAiEngine('gemini')}
+                  className={`px-3 py-1.5 rounded-lg font-semibold transition-all flex items-center space-x-1.5 ${
+                    aiEngine === 'gemini'
+                      ? 'bg-primary-600 text-white shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Google Gemini 3.5</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAiEngine('local')}
+                  className={`px-3 py-1.5 rounded-lg font-semibold transition-all flex items-center space-x-1.5 ${
+                    aiEngine === 'local'
+                      ? 'bg-primary-600 text-white shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  <span>🚀 Fast Local NLP</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Speech Provider Toggle */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-xl border border-border bg-background gap-3">
+              <div>
+                <span className="font-semibold text-foreground">Voice Recognition Mode</span>
+                <p className="text-[11px] text-muted-foreground mt-0.5">
+                  Toggle between live Gnani AI (Vachana) Indian speech recognition and mock testing adapter
+                </p>
+              </div>
+              <div className="flex items-center p-1 bg-muted rounded-xl border border-border shrink-0 self-start sm:self-auto">
+                <button
+                  type="button"
+                  onClick={() => setUseVoiceMock(false)}
+                  className={`px-3 py-1.5 rounded-lg font-semibold transition-all flex items-center space-x-1.5 ${
+                    !useVoiceMock
+                      ? 'bg-emerald-600 text-white shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  <Mic className="w-3.5 h-3.5" />
+                  <span>Gnani AI (Live)</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setUseVoiceMock(true)}
+                  className={`px-3 py-1.5 rounded-lg font-semibold transition-all flex items-center space-x-1.5 ${
+                    useVoiceMock
+                      ? 'bg-emerald-600 text-white shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  <span>Mock Voice (Test)</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>

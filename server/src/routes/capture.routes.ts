@@ -16,6 +16,7 @@ const captureSchema = z.object({
     source: z.enum(['voice', 'text', 'manual']).default('text'),
     language: z.string().optional(),
     rawNoteOnly: z.boolean().optional(),
+    engine: z.enum(['gemini', 'local']).optional(),
   }),
 });
 
@@ -104,8 +105,13 @@ router.post('/', authenticate, validate(captureSchema), async (req: AuthRequest,
       return;
     }
 
-    // Run AI structured extraction
-    const extraction = await AIService.extractStructuredData(text, user.timezone, user.currency);
+    // Run AI structured extraction (respecting engine toggle)
+    const extraction = await AIService.extractStructuredData(
+      text,
+      user.timezone,
+      user.currency,
+      req.body.engine
+    );
 
     res.json({
       success: true,

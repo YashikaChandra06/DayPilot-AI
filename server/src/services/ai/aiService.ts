@@ -62,9 +62,15 @@ export class AIService {
   static async extractStructuredData(
     text: string,
     userTimezone: string = 'Asia/Kolkata',
-    userCurrency: string = 'INR'
+    userCurrency: string = 'INR',
+    preferEngine?: 'gemini' | 'local'
   ): Promise<ExtractionResult> {
-    // If external LLM is configured (e.g., OpenAI, Groq, Gemini), try calling it
+    // If local engine is explicitly preferred, run deterministic regex/NLP directly
+    if (preferEngine === 'local') {
+      return this.extractLocally(text, userTimezone, userCurrency);
+    }
+
+    // If external LLM is configured (or explicitly requested), call Gemini / LLM
     if (config.llm.apiKey && config.llm.provider !== 'local') {
       try {
         return await this.extractWithLLM(text, userTimezone, userCurrency);
