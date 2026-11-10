@@ -18,7 +18,6 @@ import {
   UploadCloud,
   FileAudio,
 } from 'lucide-react';
-import { SlidingSegmentedToggle } from '../common/SlidingSegmentedToggle';
 
 interface UniversalCaptureModalProps {
   isOpen: boolean;
@@ -38,7 +37,6 @@ export const UniversalCaptureModal: React.FC<UniversalCaptureModalProps> = ({
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isUploadingAudio, setIsUploadingAudio] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [selectedEngine, setSelectedEngine] = useState<'gemini' | 'local'>('gemini');
   const [extraction, setExtraction] = useState<ExtractionResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [savedSuccess, setSavedSuccess] = useState(false);
@@ -141,8 +139,7 @@ export const UniversalCaptureModal: React.FC<UniversalCaptureModalProps> = ({
       const res = await api.captureText(
         inputText,
         isRecording ? 'voice' : 'text',
-        activeLanguage,
-        selectedEngine
+        activeLanguage
       );
       setExtraction(res.extraction);
     } catch (err: any) {
@@ -216,25 +213,12 @@ export const UniversalCaptureModal: React.FC<UniversalCaptureModalProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center space-x-2">
-            {/* AI Engine Mode Sliding Toggle */}
-            <SlidingSegmentedToggle<'gemini' | 'local'>
-              options={[
-                { value: 'gemini', label: 'Gemini', icon: <Sparkles className="w-3 h-3" />, hint: 'Google Gemini 3.5 Flash' },
-                { value: 'local', label: 'Local', hint: 'Fast Local NLP' },
-              ]}
-              value={selectedEngine}
-              onChange={setSelectedEngine}
-              size="sm"
-            />
-
-            <button
-              onClick={onClose}
-              className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
+          <button
+            onClick={onClose}
+            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
         {/* Modal Body */}

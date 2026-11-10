@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { Settings, Globe, DollarSign, Bell, Clock, Check, Sparkles, Send, Cpu, Mic } from 'lucide-react';
+import { Globe, Bell, Check } from 'lucide-react';
 import { notificationService } from '../../services/notificationService';
 import { ToggleSwitch } from '../common/ToggleSwitch';
-import { SlidingSegmentedToggle } from '../common/SlidingSegmentedToggle';
 
 const LANGUAGES = [
   { code: 'en-IN', name: 'English (India)' },
@@ -17,32 +16,18 @@ const LANGUAGES = [
   { code: 'gu-IN', name: 'ગુજરાતી (Gujarati)' },
 ];
 
-const CURRENCIES = [
-  { code: 'INR', symbol: '₹', name: 'Indian Rupee' },
-  { code: 'USD', symbol: '$', name: 'US Dollar' },
-  { code: 'EUR', symbol: '€', name: 'Euro' },
-  { code: 'GBP', symbol: '£', name: 'British Pound' },
-  { code: 'AED', symbol: 'AED', name: 'UAE Dirham' },
-];
-
 export const SettingsView: React.FC = () => {
   const { user, updateUser, activeLanguage, setActiveLanguage } = useAuth();
   const [name, setName] = useState(user?.name || '');
   const [voiceLang, setVoiceLang] = useState(user?.preferredVoiceLanguage || activeLanguage || 'en-IN');
-  const [currency, setCurrency] = useState(user?.currency || 'INR');
-  const [timezone, setTimezone] = useState(user?.timezone || 'Asia/Kolkata');
+  const [currency] = useState(user?.currency || 'INR');
+  const [timezone] = useState(user?.timezone || 'Asia/Kolkata');
   const [inAppReminders, setInAppReminders] = useState(
     user?.notificationPreferences?.inAppReminders ?? true
   );
   const [dailyBriefing, setDailyBriefing] = useState(
     user?.notificationPreferences?.dailyBriefing ?? true
   );
-  const [aiEngine, setAiEngine] = useState<'gemini' | 'local'>(() => {
-    return (localStorage.getItem('daypilot_default_engine') as 'gemini' | 'local') || 'gemini';
-  });
-  const [useVoiceMock, setUseVoiceMock] = useState<boolean>(() => {
-    return localStorage.getItem('daypilot_voice_mock') === 'true';
-  });
   const [isSaving, setIsSaving] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [notificationStatus, setNotificationStatus] = useState<string | null>(null);
@@ -75,8 +60,6 @@ export const SettingsView: React.FC = () => {
         },
       });
       setActiveLanguage(voiceLang);
-      localStorage.setItem('daypilot_default_engine', aiEngine);
-      localStorage.setItem('daypilot_voice_mock', useVoiceMock ? 'true' : 'false');
       setSavedSuccess(true);
       setTimeout(() => setSavedSuccess(false), 3000);
     } catch (err) {
@@ -135,110 +118,22 @@ export const SettingsView: React.FC = () => {
             <h2 className="font-semibold text-foreground text-sm">Multilingual & Voice Engine</h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-            <div>
-              <label className="font-semibold text-foreground">Preferred Voice Language</label>
-              <p className="text-[11px] text-muted-foreground mb-1.5">
-                Default language for STT transcription and daily briefing synthesis
-              </p>
-              <select
-                value={voiceLang}
-                onChange={(e) => setVoiceLang(e.target.value)}
-                className="w-full p-2.5 rounded-xl border border-input bg-background text-foreground text-xs focus:ring-2 focus:ring-primary-500/30 outline-none"
-              >
-                {LANGUAGES.map((l) => (
-                  <option key={l.code} value={l.code}>
-                    {l.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="font-semibold text-foreground">Default Currency</label>
-              <p className="text-[11px] text-muted-foreground mb-1.5">
-                Currency applied to newly captured expenses and budgets
-              </p>
-              <select
-                value={currency}
-                onChange={(e) => setCurrency(e.target.value)}
-                className="w-full p-2.5 rounded-xl border border-input bg-background text-foreground text-xs focus:ring-2 focus:ring-primary-500/30 outline-none"
-              >
-                {CURRENCIES.map((c) => (
-                  <option key={c.code} value={c.code}>
-                    {c.symbol} — {c.name} ({c.code})
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-        </div>
-
-        {/* AI Engine & Voice Provider Toggles */}
-        <div className="p-6 rounded-2xl border border-border bg-card space-y-4">
-          <div className="flex items-center space-x-2">
-            <Cpu className="w-4 h-4 text-primary-500" />
-            <h2 className="font-semibold text-foreground text-sm">AI Engine & Voice Provider</h2>
-          </div>
-
-          <div className="space-y-3 text-xs">
-            {/* LLM Engine Toggle */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-xl border border-border bg-background gap-3">
-              <div>
-                <span className="font-semibold text-foreground">AI Extraction Engine</span>
-                <p className="text-[11px] text-muted-foreground mt-0.5">
-                  Toggle between Google Gemini 3.5 Flash cloud intelligence and instant offline regex parsing
-                </p>
-              </div>
-              <SlidingSegmentedToggle<'gemini' | 'local'>
-                options={[
-                  {
-                    value: 'gemini',
-                    label: 'Google Gemini 3.5',
-                    icon: <Sparkles className="w-3.5 h-3.5" />,
-                    hint: 'Google Gemini 3.5 Flash Cloud LLM',
-                  },
-                  {
-                    value: 'local',
-                    label: 'Fast Local NLP',
-                    icon: <span>🚀</span>,
-                    hint: 'Deterministic Instant Local Parser',
-                  },
-                ]}
-                value={aiEngine}
-                onChange={(val) => setAiEngine(val)}
-                className="w-full sm:w-auto"
-              />
-            </div>
-
-            {/* Speech Provider Toggle */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-xl border border-border bg-background gap-3">
-              <div>
-                <span className="font-semibold text-foreground">Voice Recognition Mode</span>
-                <p className="text-[11px] text-muted-foreground mt-0.5">
-                  Toggle between live Gnani AI (Vachana) Indian speech recognition and mock testing adapter
-                </p>
-              </div>
-              <SlidingSegmentedToggle<'live' | 'mock'>
-                options={[
-                  {
-                    value: 'live',
-                    label: 'Gnani AI (Live)',
-                    icon: <Mic className="w-3.5 h-3.5" />,
-                    hint: 'Gnani AI Vachana Cloud STT/TTS',
-                  },
-                  {
-                    value: 'mock',
-                    label: 'Mock Voice (Test)',
-                    hint: 'Simulated Speech Adapter for Testing',
-                  },
-                ]}
-                value={useVoiceMock ? 'mock' : 'live'}
-                onChange={(val) => setUseVoiceMock(val === 'mock')}
-                activeColor="bg-emerald-600 text-white"
-                className="w-full sm:w-auto"
-              />
-            </div>
+          <div className="text-xs">
+            <label className="font-semibold text-foreground">Preferred Voice Language</label>
+            <p className="text-[11px] text-muted-foreground mb-1.5">
+              Default language for STT transcription and daily briefing synthesis
+            </p>
+            <select
+              value={voiceLang}
+              onChange={(e) => setVoiceLang(e.target.value)}
+              className="w-full sm:w-1/2 p-2.5 rounded-xl border border-input bg-background text-foreground text-xs focus:ring-2 focus:ring-primary-500/30 outline-none"
+            >
+              {LANGUAGES.map((l) => (
+                <option key={l.code} value={l.code}>
+                  {l.name}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 
