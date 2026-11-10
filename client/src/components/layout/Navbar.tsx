@@ -137,13 +137,28 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenCapture, onOpenSearch, str
             )}
           </div>
 
-          {/* Theme Toggle Button */}
+          {/* Theme Toggle Switch with sliding effect */}
           <button
             onClick={toggleTheme}
             aria-label="Toggle Dark/Light Mode"
-            className="p-2 rounded-lg border border-border bg-card hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+            title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+            className="relative inline-flex items-center w-12 h-6 p-0.5 rounded-full bg-muted/90 border border-border transition-colors duration-300 focus:outline-none hover:bg-muted"
           >
-            {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-primary-600" />}
+            <div
+              className={`absolute top-0.5 w-5 h-5 rounded-full bg-card shadow-sm flex items-center justify-center transform transition-transform duration-300 ease-out border border-border/40 ${
+                theme === 'dark' ? 'translate-x-6' : 'translate-x-0.5'
+              }`}
+            >
+              {theme === 'dark' ? (
+                <Moon className="w-3 h-3 text-indigo-400 animate-in spin-in-180 duration-300" />
+              ) : (
+                <Sun className="w-3 h-3 text-amber-500 animate-in spin-in-180 duration-300" />
+              )}
+            </div>
+            <div className="w-full flex items-center justify-between px-1 text-muted-foreground pointer-events-none">
+              <Sun className="w-2.5 h-2.5 text-amber-500/40" />
+              <Moon className="w-2.5 h-2.5 text-indigo-400/40" />
+            </div>
           </button>
 
           {/* User Menu */}

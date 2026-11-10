@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { Settings, Globe, DollarSign, Bell, Clock, Check, Sparkles, Send, Cpu, Mic } from 'lucide-react';
 import { notificationService } from '../../services/notificationService';
+import { ToggleSwitch } from '../common/ToggleSwitch';
+import { SlidingSegmentedToggle } from '../common/SlidingSegmentedToggle';
 
 const LANGUAGES = [
   { code: 'en-IN', name: 'English (India)' },
@@ -188,31 +190,25 @@ export const SettingsView: React.FC = () => {
                   Toggle between Google Gemini 3.5 Flash cloud intelligence and instant offline regex parsing
                 </p>
               </div>
-              <div className="flex items-center p-1 bg-muted rounded-xl border border-border shrink-0 self-start sm:self-auto">
-                <button
-                  type="button"
-                  onClick={() => setAiEngine('gemini')}
-                  className={`px-3 py-1.5 rounded-lg font-semibold transition-all flex items-center space-x-1.5 ${
-                    aiEngine === 'gemini'
-                      ? 'bg-primary-600 text-white shadow-sm'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>Google Gemini 3.5</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setAiEngine('local')}
-                  className={`px-3 py-1.5 rounded-lg font-semibold transition-all flex items-center space-x-1.5 ${
-                    aiEngine === 'local'
-                      ? 'bg-primary-600 text-white shadow-sm'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  <span>🚀 Fast Local NLP</span>
-                </button>
-              </div>
+              <SlidingSegmentedToggle<'gemini' | 'local'>
+                options={[
+                  {
+                    value: 'gemini',
+                    label: 'Google Gemini 3.5',
+                    icon: <Sparkles className="w-3.5 h-3.5" />,
+                    hint: 'Google Gemini 3.5 Flash Cloud LLM',
+                  },
+                  {
+                    value: 'local',
+                    label: 'Fast Local NLP',
+                    icon: <span>🚀</span>,
+                    hint: 'Deterministic Instant Local Parser',
+                  },
+                ]}
+                value={aiEngine}
+                onChange={(val) => setAiEngine(val)}
+                className="w-full sm:w-auto"
+              />
             </div>
 
             {/* Speech Provider Toggle */}
@@ -223,31 +219,25 @@ export const SettingsView: React.FC = () => {
                   Toggle between live Gnani AI (Vachana) Indian speech recognition and mock testing adapter
                 </p>
               </div>
-              <div className="flex items-center p-1 bg-muted rounded-xl border border-border shrink-0 self-start sm:self-auto">
-                <button
-                  type="button"
-                  onClick={() => setUseVoiceMock(false)}
-                  className={`px-3 py-1.5 rounded-lg font-semibold transition-all flex items-center space-x-1.5 ${
-                    !useVoiceMock
-                      ? 'bg-emerald-600 text-white shadow-sm'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  <Mic className="w-3.5 h-3.5" />
-                  <span>Gnani AI (Live)</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setUseVoiceMock(true)}
-                  className={`px-3 py-1.5 rounded-lg font-semibold transition-all flex items-center space-x-1.5 ${
-                    useVoiceMock
-                      ? 'bg-emerald-600 text-white shadow-sm'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  <span>Mock Voice (Test)</span>
-                </button>
-              </div>
+              <SlidingSegmentedToggle<'live' | 'mock'>
+                options={[
+                  {
+                    value: 'live',
+                    label: 'Gnani AI (Live)',
+                    icon: <Mic className="w-3.5 h-3.5" />,
+                    hint: 'Gnani AI Vachana Cloud STT/TTS',
+                  },
+                  {
+                    value: 'mock',
+                    label: 'Mock Voice (Test)',
+                    hint: 'Simulated Speech Adapter for Testing',
+                  },
+                ]}
+                value={useVoiceMock ? 'mock' : 'live'}
+                onChange={(val) => setUseVoiceMock(val === 'mock')}
+                activeColor="bg-emerald-600 text-white"
+                className="w-full sm:w-auto"
+              />
             </div>
           </div>
         </div>
@@ -260,35 +250,33 @@ export const SettingsView: React.FC = () => {
           </div>
 
           <div className="space-y-3 text-xs">
-            <label className="flex items-center justify-between p-3 rounded-xl border border-border bg-background cursor-pointer hover:bg-muted/40 transition-colors">
+            <div className="flex items-center justify-between p-3.5 rounded-xl border border-border bg-background transition-colors">
               <div>
                 <span className="font-semibold text-foreground">Daily Morning Audio Briefing</span>
-                <p className="text-[11px] text-muted-foreground">
-                  Generate daily personalized audio briefing of today's tasks and spend status
+                <p className="text-[11px] text-muted-foreground mt-0.5">
+                  Generate daily personalized audio briefing of today&apos;s tasks and spend status
                 </p>
               </div>
-              <input
-                type="checkbox"
+              <ToggleSwitch
                 checked={dailyBriefing}
-                onChange={(e) => setDailyBriefing(e.target.checked)}
-                className="w-4 h-4 accent-primary-600 rounded"
+                onChange={setDailyBriefing}
+                ariaLabel="Daily Morning Audio Briefing"
               />
-            </label>
+            </div>
 
-            <label className="flex items-center justify-between p-3 rounded-xl border border-border bg-background cursor-pointer hover:bg-muted/40 transition-colors">
+            <div className="flex items-center justify-between p-3.5 rounded-xl border border-border bg-background transition-colors">
               <div>
                 <span className="font-semibold text-foreground">In-App Task Reminders</span>
-                <p className="text-[11px] text-muted-foreground">
+                <p className="text-[11px] text-muted-foreground mt-0.5">
                   Alert when high-priority tasks approach their scheduled due time
                 </p>
               </div>
-              <input
-                type="checkbox"
+              <ToggleSwitch
                 checked={inAppReminders}
-                onChange={(e) => setInAppReminders(e.target.checked)}
-                className="w-4 h-4 accent-primary-600 rounded"
+                onChange={setInAppReminders}
+                ariaLabel="In-App Task Reminders"
               />
-            </label>
+            </div>
 
             {/* Test Notification Action */}
             <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-t border-border">

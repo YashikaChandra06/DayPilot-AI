@@ -18,6 +18,7 @@ import {
   UploadCloud,
   FileAudio,
 } from 'lucide-react';
+import { SlidingSegmentedToggle } from '../common/SlidingSegmentedToggle';
 
 interface UniversalCaptureModalProps {
   isOpen: boolean;
@@ -216,33 +217,16 @@ export const UniversalCaptureModal: React.FC<UniversalCaptureModalProps> = ({
           </div>
 
           <div className="flex items-center space-x-2">
-            {/* AI Engine Mode Toggle */}
-            <div className="flex items-center p-1 bg-muted/80 rounded-xl border border-border text-[11px] font-semibold">
-              <button
-                type="button"
-                onClick={() => setSelectedEngine('gemini')}
-                className={`px-2.5 py-1 rounded-lg transition-all flex items-center space-x-1 ${
-                  selectedEngine === 'gemini'
-                    ? 'bg-primary-600 text-white shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-                title="Use Google Gemini 3.5 Flash for deep contextual extraction"
-              >
-                <span>⚡ Gemini</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setSelectedEngine('local')}
-                className={`px-2.5 py-1 rounded-lg transition-all flex items-center space-x-1 ${
-                  selectedEngine === 'local'
-                    ? 'bg-primary-600 text-white shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-                title="Use instant local deterministic NLP engine (offline / 0ms latency)"
-              >
-                <span>🚀 Local</span>
-              </button>
-            </div>
+            {/* AI Engine Mode Sliding Toggle */}
+            <SlidingSegmentedToggle<'gemini' | 'local'>
+              options={[
+                { value: 'gemini', label: 'Gemini', icon: <Sparkles className="w-3 h-3" />, hint: 'Google Gemini 3.5 Flash' },
+                { value: 'local', label: 'Local', hint: 'Fast Local NLP' },
+              ]}
+              value={selectedEngine}
+              onChange={setSelectedEngine}
+              size="sm"
+            />
 
             <button
               onClick={onClose}
