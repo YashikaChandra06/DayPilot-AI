@@ -84,4 +84,3 @@ export function SlidingSegmentedToggle<T extends string>({
     </div>
   );
 }
-

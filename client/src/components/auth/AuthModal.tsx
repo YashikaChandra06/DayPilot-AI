@@ -88,15 +88,6 @@ export const AuthModal: React.FC = () => {
   const switchTab = (tab: 'signin' | 'signup') => {
     setActiveTab(tab);
     setError(null);
-    if (tab === 'signup' && !name) {
-      setName('Yashika Chandra');
-    }
-  };
-
-  const handleFillExample = () => {
-    setName('Yashika Chandra');
-    setEmail(`yashika.${Math.floor(100 + Math.random() * 900)}@daypilot.ai`);
-    setPassword('password123');
   };
 
   return (
@@ -149,34 +140,11 @@ export const AuthModal: React.FC = () => {
           </div>
         )}
 
-        {/* Example Details Helper for Quick Demo / Signup */}
-        {activeTab === 'signup' && (
-          <div className="flex items-center justify-between p-2.5 rounded-xl bg-primary-50/70 dark:bg-primary-950/30 border border-primary-200/60 dark:border-primary-800/60 text-xs">
-            <span className="text-[11px] text-muted-foreground">Quick test account?</span>
-            <button
-              type="button"
-              onClick={handleFillExample}
-              className="text-[11px] font-semibold text-primary-600 dark:text-primary-400 hover:underline flex items-center space-x-1"
-            >
-              <span>⚡ Fill Example Details</span>
-            </button>
-          </div>
-        )}
-
         {/* Authentication Form */}
         <form onSubmit={handleSubmit} className="space-y-4 text-xs">
           {activeTab === 'signup' && (
             <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="font-semibold text-foreground">Full Name</label>
-                <button
-                  type="button"
-                  onClick={() => setName('Yashika Chandra')}
-                  className="text-[10px] text-primary-600 dark:text-primary-400 font-semibold hover:underline"
-                >
-                  Use: Yashika Chandra
-                </button>
-              </div>
+              <label className="block font-semibold text-foreground mb-1">Full Name</label>
               <div className="relative">
                 <User className="w-4 h-4 text-muted-foreground absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
@@ -184,7 +152,7 @@ export const AuthModal: React.FC = () => {
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="e.g. Yashika Chandra"
+                  placeholder="e.g. Yashika Sharma"
                   className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-input bg-background text-foreground text-xs focus:ring-2 focus:ring-primary-500/30 outline-none transition-all"
                 />
               </div>

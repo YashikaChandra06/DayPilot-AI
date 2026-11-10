@@ -61,4 +61,3 @@ export const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
     </button>
   );
 };
-
